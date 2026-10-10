@@ -1,0 +1,32 @@
+# Python & Environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.pytest_cache/
+*.db
+*.sqlite3
+
+# Secrets & Environment Configurations (CRITICAL: Never commit to Git)
+.env
+.env.*
+!.env.example
+
+# Node & Frontend dependencies & builds
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.npm/
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# Presentation temp / generated builds if preferred (optional)
+~$*.pptx
