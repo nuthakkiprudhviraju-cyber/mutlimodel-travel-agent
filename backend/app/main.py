@@ -55,7 +55,9 @@ async def ensure_db_seeded(request, call_next):
 # Health endpoints
 @app.get("/", tags=["Health"])
 @app.get("/health", tags=["Health"])
+@app.get("/api/index.py", tags=["Health"])
 @app.get("/api/v1/health", tags=["Health"])
+@app.get("/v1/health", tags=["Health"])
 def health_check():
     return {
         "status": "healthy",
@@ -65,13 +67,16 @@ def health_check():
     }
 
 @app.get("/api/v1/ready", tags=["Health"])
+@app.get("/v1/ready", tags=["Health"])
 def readiness_check():
     return {"status": "ready", "database": "connected"}
 
-# Include API v1 Routers
-app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
-app.include_router(trips.router, prefix="/api/v1/trips", tags=["Trips"])
-app.include_router(disruptions.router, prefix="/api/v1/disruptions", tags=["Disruptions"])
-app.include_router(bookings.router, prefix="/api/v1/bookings", tags=["Bookings"])
-app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["Notifications"])
-app.include_router(demo.router, prefix="/api/v1/demo", tags=["Demo Management"])
+# Include API v1 Routers (both /api/v1/... and /v1/... for Vercel rewrite compatibility)
+for prefix_base in ["/api/v1", "/v1"]:
+    app.include_router(auth.router, prefix=f"{prefix_base}/auth", tags=["Authentication"])
+    app.include_router(trips.router, prefix=f"{prefix_base}/trips", tags=["Trips"])
+    app.include_router(disruptions.router, prefix=f"{prefix_base}/disruptions", tags=["Disruptions"])
+    app.include_router(bookings.router, prefix=f"{prefix_base}/bookings", tags=["Bookings"])
+    app.include_router(notifications.router, prefix=f"{prefix_base}/notifications", tags=["Notifications"])
+    app.include_router(demo.router, prefix=f"{prefix_base}/demo", tags=["Demo Management"])
+
