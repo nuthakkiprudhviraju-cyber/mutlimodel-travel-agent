@@ -1,3 +1,11 @@
+import os
+import sys
+
+# Ensure 'backend/' root directory is in sys.path for Vercel serverless Python runtime
+_backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if _backend_dir not in sys.path:
+    sys.path.insert(0, _backend_dir)
+
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
