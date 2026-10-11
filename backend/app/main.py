@@ -13,17 +13,6 @@ from app.db.session import engine, Base, SessionLocal
 from app.db.seed import seed_database
 from app.api.v1.endpoints import auth, trips, disruptions, bookings, notifications, demo
 
-# Create database tables upon app startup if they don't exist
-try:
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
-    try:
-        seed_database(db)
-    finally:
-        db.close()
-except Exception as e:
-    print(f"Database startup warning: {e}")
-
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
@@ -45,7 +34,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+_db_initialized = False
+
+@app.middleware("http")
+async def ensure_db_seeded(request, call_next):
+    global _db_initialized
+    if not _db_initialized and request.method != "OPTIONS" and not request.url.path.endswith("/health"):
+        try:
+            Base.metadata.create_all(bind=engine)
+            db = SessionLocal()
+            try:
+                seed_database(db)
+            finally:
+                db.close()
+            _db_initialized = True
+        except Exception as e:
+            print(f"Database init warning: {e}")
+    return await call_next(request)
+
 # Health endpoints
+@app.get("/", tags=["Health"])
+@app.get("/health", tags=["Health"])
 @app.get("/api/v1/health", tags=["Health"])
 def health_check():
     return {
