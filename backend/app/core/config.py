@@ -17,8 +17,8 @@ class Settings(BaseSettings):
     COOKIE_SECURE: bool = False  # Set to True in production (HTTPS)
     COOKIE_SAMESITE: str = "lax"
     
-    # Database
-    DATABASE_URL: str = "sqlite:///./roamagent.db"
+    # Database (Neon PostgreSQL)
+    DATABASE_URL: str = "postgresql://neondb_owner:npg_ciW2fgetRL1J@ep-polished-term-b4fvyodq-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require"
     
     # Google Gemini AI
     GEMINI_API_KEY: Optional[str] = None

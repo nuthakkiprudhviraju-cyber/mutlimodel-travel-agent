@@ -6,12 +6,15 @@ from app.db.seed import seed_database
 from app.api.v1.endpoints import auth, trips, disruptions, bookings, notifications, demo
 
 # Create database tables upon app startup if they don't exist
-Base.metadata.create_all(bind=engine)
-db = SessionLocal()
 try:
-    seed_database(db)
-finally:
-    db.close()
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        seed_database(db)
+    finally:
+        db.close()
+except Exception as e:
+    print(f"Database startup warning: {e}")
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -24,7 +27,10 @@ app = FastAPI(
 # CORS Middleware with strict origin settings + Vercel domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=settings.BACKEND_CORS_ORIGINS + [
+        "https://mutlimodel-travel-agent.vercel.app",
+        "https://traveltech-plum.vercel.app",
+    ],
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
